@@ -1,0 +1,10 @@
+services:
+  cdk:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./cdk:/cdk
+    working_dir: /cdk
