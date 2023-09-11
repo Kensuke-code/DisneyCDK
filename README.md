@@ -21,3 +21,7 @@ AWS_DEFAULT_REGION
 -  create cdk project
 
 `docker-compose run --rm cdk cdk init app --language typescript`
+
+- run cdk bootstrap
+
+`docker-compose run --rm cdk cdk bootstrap`
