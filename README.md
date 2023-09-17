@@ -25,3 +25,7 @@ AWS_DEFAULT_REGION
 - run cdk bootstrap
 
 `docker-compose run --rm cdk cdk bootstrap`
+
+- cdk diff
+
+`docker-compose run --rm cdk cdk diff CdkStack`
