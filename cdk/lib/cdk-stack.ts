@@ -14,6 +14,7 @@ export class CdkStack extends cdk.Stack {
     });
 
     // OAC
+    // NOTE: S3をpublicアクセスを許可せずCloudFrontのみからアクセスさせるために必要
     const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(this, 'OriginAccessControl', {
       originAccessControlConfig: {
           name: 'OriginAccessControlForContentsBucket',
@@ -53,14 +54,44 @@ export class CdkStack extends cdk.Stack {
     bucket.addToResourcePolicy(contentsBucketPolicyStatement);
 
     // Lambda
-    const lambda = new cdk.aws_lambda.Function(this, 'lambda', {
+    const lambda = new cdk.aws_lambda.Function(this, 'FetchDisneyWaitTimeFunc', {
       code: cdk.aws_lambda.Code.fromAsset('lambda'),
-      handler: 'lambda_handler', // 実行する関数名
-      runtime: Runtime.PYTHON_3_11,
+      handler: 'index.lambda_handler', // 実行するファイル名.関数名
+      runtime: Runtime.PYTHON_3_11, // レイヤーのライブラリに合わせる
+      timeout: cdk.Duration.seconds(20),
       architecture: cdk.aws_lambda.Architecture.ARM_64
-      });
+    });
+
+    // 事前に手動用意したレイヤーを読み込む
+    // TODO: レイヤーの作成もコード化したい
+    lambda.addLayers(
+      cdk.aws_lambda.LayerVersion.fromLayerVersionArn(this, 'requestsLayer', 'arn:aws:lambda:ap-northeast-1:242702784610:layer:pip-libraries:1')
+    )
 
     // API Gateway
+    const api = new cdk.aws_apigateway.RestApi(this,'APIGatewayForLambda',
+      {
+        deployOptions: {
+          stageName: 'v1',
+        },
+      }
+    );
 
+    const park = api.root.addResource('waittime')
+    park.addMethod(
+      'GET', 
+      new cdk.aws_apigateway.LambdaIntegration(lambda),
+      {
+        requestParameters:{
+          "method.request.querystring.park": true,
+        }
+      }
+    );
+
+    // Output the API URL after deployment
+    new cdk.CfnOutput(this, 'ApiUrlOutput', {
+      value: api.url,
+      description: 'API URL',
+    });
   }
 }
