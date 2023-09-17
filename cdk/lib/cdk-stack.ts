@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -50,6 +51,16 @@ export class CdkStack extends cdk.Stack {
       'AWS:SourceArn': `arn:aws:cloudfront::${accountId}:distribution/${distribution.distributionId}`
     })
     bucket.addToResourcePolicy(contentsBucketPolicyStatement);
+
+    // Lambda
+    const lambda = new cdk.aws_lambda.Function(this, 'lambda', {
+      code: cdk.aws_lambda.Code.fromAsset('lambda'),
+      handler: 'lambda_handler', // 実行する関数名
+      runtime: Runtime.PYTHON_3_11,
+      architecture: cdk.aws_lambda.Architecture.ARM_64
+      });
+
+    // API Gateway
 
   }
 }
