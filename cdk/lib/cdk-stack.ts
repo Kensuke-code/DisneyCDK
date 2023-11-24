@@ -1,10 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import {VPC} from '../constructs/network-layer/vpc';
+
+export interface Props extends cdk.StackProps {
+  myIpAddress: string
+}
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+
+    // VPC
+    new VPC(this, "VPC")
+
 
     const { accountId } = new cdk.ScopedAws(this);
 
