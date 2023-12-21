@@ -1,5 +1,9 @@
 # DisneyCDK
 
+# Infrastructure
+
+<img src="infrastructure.png" width=50%>
+
 ## setup
 
 - create .env
