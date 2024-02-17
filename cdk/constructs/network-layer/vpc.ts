@@ -47,21 +47,26 @@ export class VPC extends Construct {
       'systemctl start docker',
       'systemctl enable docker',
       'mkdir -p /usr/local/lib/docker/cli-plugins/',
-      'curl -SL https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose',
+      'curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-aarch64 -o /usr/local/lib/docker/cli-plugins/docker-compose',
       'chmod +x /usr/local/lib/docker/cli-plugins/docker-compose'
     )
+
+    const machineImage = ec2.MachineImage.latestAmazonLinux2023({
+      edition: ec2.AmazonLinuxEdition.STANDARD,
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+    });
 
     // EC2インスタンス作成
     const instance = new ec2.Instance(this, 'DisneyGachaInstance', {
       vpc: vpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
-      machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
       userData: userData,
       securityGroup: securityGroup,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC
       },
-      ssmSessionPermissions: true
+      ssmSessionPermissions: true,
+      machineImage: machineImage
     });
 
     // ElasticIP
