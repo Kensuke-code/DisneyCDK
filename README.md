@@ -30,11 +30,11 @@ AWS_DEFAULT_REGION
 
 - cdk diff
 
-`docker-compose run --rm cdk cdk diff (CdkStack)`
+`docker-compose run --rm cdk cdk diff (CdkStack) --output ./tmp/cdk-out`
 
 - cdk deploy
 
-`docker-compose run --rm cdk cdk deploy (CdkStack)`
+`docker-compose run --rm cdk cdk deploy (CdkStack --output ./tmp/cdk-out)`
 
 ## API Gateway
 
