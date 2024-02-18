@@ -2,7 +2,7 @@
 
 # Infrastructure
 
-<img src="infrastructure.png" width=50%>
+<img src="doc/infrastructure.png" width=50%>
 
 ## setup
 
@@ -40,8 +40,31 @@ AWS_DEFAULT_REGION
 
 `docker-compose run --rm cdk cdk deploy (CdkStack --output ./tmp/cdk-out)`
 
-## API Gateway
+## EC2 Instance
+- webアプリケーションサービスを起動
+- 内部でnuxtとrailsのdockerを起動
 
+## S3
+- アトラクションのサムネイルを保管
+
+## CloudFront
+- アトラクションサムネイル用のCDN
+
+## EventBridge
+- 以下の定期実行の役割を担う
+  - 毎朝9時にEC2インスタンスを自動で起動
+  - 毎晩21時にEC2インスタンスを自動で停止
+  - 毎朝9時10分にEC2内のdockerコンテナを起動する。コマンドはSystemManagerで管理
+
+## System Manager
+- EC2のdockerコンテナを起動するスクリプトを管理している
+
+## API Gateway
+- RailsからAPIリクエストを受け取りLambdaに渡す役割
+
+## Lambda
+- Pythonでアトラクションの待ち時間をスクレイピング
+- JSON形式に加工して返す
 - 以下のURLにアクセスするとアトラクション情報が取得できるようになる(クエリパラメータのparkは "sea" か "land"を指定)
 
 `https://r5yd59ix1d.execute-api.ap-northeast-1.amazonaws.com/v1/waittime?park=sea`
